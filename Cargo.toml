@@ -1,0 +1,6 @@
+[package]
+name = "fireworks"
+version = "0.1.0"
+authors = ["James Duerden <james@jamieduerden.me>"]
+
+[dependencies]
