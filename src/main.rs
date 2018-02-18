@@ -1,42 +1,27 @@
 #![feature(plugin)]
+#![feature(custom_attribute)]
 #![plugin(rocket_codegen)]
 
 #[macro_use]
 extern crate diesel;
 extern crate dotenv;
+#[macro_use]
+extern crate lazy_static;
+extern crate r2d2;
+extern crate r2d2_diesel;
 extern crate rocket;
+extern crate rocket_contrib;
+extern crate serde;
+#[macro_use]
+extern crate serde_derive;
+extern crate serde_json;
 
-use diesel::prelude::*;
-use dotenv::dotenv;
-use std::env;
-
-pub mod schema;
-pub mod users;
-
-#[get("/")]
-fn index() -> String {
-    use schema::users::dsl::*;
-    use users::*;
-
-    let connection = establish_connection();
-    let results = users
-        .limit(5)
-        .load::<User>(&connection)
-        .expect("Error loading posts");
-
-    println!("Displaying {} posts", results.len());
-    let user = &results[0];
-    format!("{}, {}", user.username, user.email)
-}
+mod database;
+mod posts;
+mod routes;
+mod schema;
+mod users;
 
 fn main() {
-    rocket::ignite().mount("/", routes![index]).launch();
-}
-
-pub fn establish_connection() -> MysqlConnection {
-    dotenv().ok();
-
-    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-    MysqlConnection::establish(&database_url)
-        .expect(&format!("Error connecting to {}", database_url))
+    rocket::ignite().mount("/", routes::routes()).launch();
 }

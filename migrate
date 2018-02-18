@@ -1,0 +1,5 @@
+#!/bin/bash
+
+diesel migration run
+rm src/schema.rs
+diesel print-schema > src/schema.rs
